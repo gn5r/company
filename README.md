@@ -54,19 +54,9 @@ classDiagram
         <<interface>>
     }
 
-    class CTO {
-        <<interface>>
-    }
-
-    class VPoE {
-        <<interface>>
-    }
-
     Member <|-- Director
     Director <|-- CEO
     Employee <|-- Executive
-    Executive <|-- CTO
-    Employee <|-- VPoE
 
     %% ==================== Roles: Business ====================
     class Plan {
@@ -86,6 +76,18 @@ classDiagram
 
     %% ==================== Roles: Technology / Engineer ====================
     class Engineer {
+        <<interface>>
+    }
+
+    class CTO {
+        <<interface>>
+    }
+
+    class VPoE {
+        <<interface>>
+    }
+
+    class EM {
         <<interface>>
     }
 
@@ -181,6 +183,10 @@ classDiagram
     }
 
     Employee <|-- Engineer
+    Executive <|-- CTO
+    Engineer <|-- CTO
+    Engineer <|-- VPoE
+    Engineer <|-- EM
     Engineer <|-- PdM
     Engineer <|-- Programmer
     Engineer <|-- DatabaseEngineer
