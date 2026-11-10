@@ -1,4 +1,4 @@
-### 1. 全体クラス図（組織・ロール・俺・ドキュメント・成果物）
+### 1. 共通モジュール（`core`）のクラス図
 
 ```mermaid
 classDiagram
@@ -8,6 +8,7 @@ classDiagram
     class Organization {
         <<interface>>
         +getPurpose() String
+        +getMembers() List~Member~
     }
 
     class Company {
@@ -18,7 +19,6 @@ classDiagram
         +getService() List~String~
         +getFoundingDate() LocalDate
         +getLocation() String
-        +getMembers() List~Member~
     }
 
     class Member {
@@ -38,10 +38,10 @@ classDiagram
     }
 
     Organization <|-- Company
-    Company o-- Member : getMembers
+    Organization o-- Member : getMembers
     Member <|-- Employee
 
-    %% ==================== Roles: Core & Top ====================
+    %% ==================== Roles: Core & Business & Technology ====================
     class Director {
         <<interface>>
     }
@@ -54,12 +54,7 @@ classDiagram
         <<interface>>
     }
 
-    Member <|-- Director
-    Director <|-- CEO
-    Employee <|-- Executive
-
-    %% ==================== Roles: Business ====================
-    class Plan {
+    class 企画職 {
         <<interface>>
         +plan(T data) PowerPoint
         +research(T target) Excel
@@ -67,14 +62,10 @@ classDiagram
 
     class PdM {
         <<interface>>
-        +requirementsDefinition(Office requirements) SpecDocument
-        +functionalDesign(Excel definition) SpecDocument
+        +要件定義(R requirements) 要件定義書~D~
+        +基本設計(要件定義書~D~ definition) 仕様書~R~
     }
 
-    Employee <|-- Plan
-    Plan <|-- PdM
-
-    %% ==================== Roles: Technology / Engineer ====================
     class Engineer {
         <<interface>>
     }
@@ -83,147 +74,23 @@ classDiagram
         <<interface>>
     }
 
-    class VPoE {
-        <<interface>>
-    }
-
-    class EM {
-        <<interface>>
-    }
-
     class Programmer {
         <<interface>>
-        +programming(SpecDocument spec) String
+        +programming(仕様書~?~ spec) ソースコード
     }
 
-    class DatabaseEngineer {
-        <<interface>>
-        +tableDesign(SpecDocument spec) SpecDocument
-    }
-
-    class Designer {
-        <<interface>>
-        +uiDesign(SpecDocument spec) String
-        +mock(SpecDocument spec) String
-    }
-
-    class UIUXDesigner {
-        <<interface>>
-        +uxDesign(SpecDocument spec) String
-    }
-
-    class SRE {
-        <<interface>>
-        +refactoring(Document spec) Infrastructure
-        +tuning(Infrastructure infra) Infrastructure
-        +monitoring(Infrastructure infra) String
-        +automate(Document manual) String
-    }
-
-    class InfraEngineer {
-        <<interface>>
-        +kitting(Document spec) Infrastructure
-    }
-
-    class OpsEngineer {
-        <<interface>>
-        +inquiryResponse(I inquiry) String
-        +troubleshooting(T issue) R
-        +incidentHandling(I incident) R
-        +release(List~F~ features) boolean
-        +cicd(String code) String
-    }
-
-    class TestEngineer {
-        <<interface>>
-        +test(Excel spec) Excel
-    }
-
-    class BackendEngineer {
-        <<interface>>
-    }
-
-    class FrontendEngineer {
-        <<interface>>
-    }
-
-    class FullStackEngineer {
-        <<interface>>
-    }
-
-    class FullCycleEngineer~F~ {
-        <<interface>>
-    }
-
-    class Me~F~ {
-        -String firstName
-        -String familyName
-        -LocalDate joinDate
-        -Integer employeeNo
-        +requirementsDefinition(Office requirements) SpecDocument
-        +functionalDesign(Excel definition) SpecDocument
-        +plan(T data) PowerPoint
-        +research(T target) Excel
-        +programming(SpecDocument spec) String
-        +tableDesign(SpecDocument spec) SpecDocument
-        +uxDesign(SpecDocument spec) String
-        +uiDesign(SpecDocument spec) String
-        +mock(SpecDocument spec) String
-        +kitting(Document spec) Infrastructure
-        +refactoring(Document spec) Infrastructure
-        +tuning(Infrastructure infra) Infrastructure
-        +monitoring(Infrastructure infra) String
-        +automate(Document manual) String
-        +test(Excel spec) Excel
-        +inquiryResponse(I inquiry) String
-        +troubleshooting(T issue) R
-        +incidentHandling(I incident) R
-        +release(List~F~ features) boolean
-        +cicd(String code) String
-    }
-
+    Member <|-- Director
+    Director <|-- CEO
+    Employee <|-- Executive
+    Employee <|-- 企画職
     Employee <|-- Engineer
+    企画職 <|-- PdM
+    Engineer <|-- PdM
     Executive <|-- CTO
     Engineer <|-- CTO
-    Engineer <|-- VPoE
-    Engineer <|-- EM
-    Engineer <|-- PdM
     Engineer <|-- Programmer
-    Engineer <|-- DatabaseEngineer
-    Engineer <|-- Designer
-    Engineer <|-- SRE
-    Engineer <|-- TestEngineer
 
-    Designer <|-- UIUXDesigner
-
-    Programmer <|-- BackendEngineer
-    DatabaseEngineer <|-- BackendEngineer
-
-    Programmer <|-- FrontendEngineer
-    UIUXDesigner <|-- FrontendEngineer
-
-    SRE <|-- InfraEngineer
-    SRE <|-- OpsEngineer
-
-    BackendEngineer <|-- FullStackEngineer
-    FrontendEngineer <|-- FullStackEngineer
-    InfraEngineer <|-- FullStackEngineer
-    TestEngineer <|-- FullStackEngineer
-    OpsEngineer <|-- FullStackEngineer
-
-    PdM <|-- FullCycleEngineer
-    FullStackEngineer <|-- FullCycleEngineer
-    FullCycleEngineer <|.. Me
-```
-
----
-
-### 2. ドキュメント・成果物（`document` / `artifact`）のクラス図
-
-```mermaid
-classDiagram
-    direction TB
-
+    %% ==================== Document & Artifacts ====================
     class Document {
         <<interface>>
         +setContent(String content) void
@@ -231,10 +98,6 @@ classDiagram
     }
 
     class Office {
-        <<sealed interface>>
-    }
-
-    class SpecDocument {
         <<sealed interface>>
     }
 
@@ -258,22 +121,125 @@ classDiagram
         -String content
     }
 
-    class Artifact {
+    class 成果物 {
         <<interface>>
     }
 
-    class Infrastructure {
+    class インフラ成果物 {
+        <<interface>>
+    }
+
+    class ソースコード {
+        <<interface>>
+    }
+
+    class 要件定義書~D~ {
+        <<interface>>
+    }
+
+    class 仕様書~D~ {
+        <<interface>>
+    }
+
+    class 設計書~D~ {
         <<interface>>
     }
 
     Document <|-- Office
-    Document <|-- SpecDocument
-
     Office <|.. PowerPoint
     Office <|.. Word
     Office <|.. Excel
-    SpecDocument <|.. Excel
-    SpecDocument <|.. Markdown
+    Document <|.. Markdown
 
-    Artifact <|-- Infrastructure
+    Document <|-- 仕様書
+    Document <|-- 設計書
+    成果物 <|-- インフラ成果物
+    成果物 <|-- ソースコード
+    成果物 <|-- 要件定義書
+    成果物 <|-- 設計書
+```
+
+---
+
+### 2. SIerモジュール（`sier`）のクラス図
+
+```mermaid
+classDiagram
+    direction TB
+
+    %% ==================== Core References ====================
+    class Engineer {
+        <<interface>>
+    }
+
+    class Programmer {
+        <<interface>>
+        +programming(仕様書~?~ spec) ソースコード
+    }
+
+    %% ==================== SIer Engineer Roles ====================
+    class TestEngineer {
+        <<interface>>
+        +テスト(仕様書~Excel~ spec) 仕様書~Excel~
+    }
+
+    class インフラエンジニア {
+        <<interface>>
+        +インフラ設計(仕様書~?~ spec) 設計書~D~
+        +インフラ構築(設計書~?~ doc) インフラ成果物
+    }
+
+    class SE {
+        <<interface>>
+        +要件定義(R requirements) 要件定義書~Excel~
+        +基本設計(要件定義書~Excel~ definition) 設計書~Excel~
+        +詳細設計(設計書~Excel~ definition) 設計書~Excel~
+        +テーブル設計(仕様書~Excel~ spec) 設計書~Excel~
+        +レビュー(成果物 artifact) String
+    }
+
+    class 保守運用エンジニア {
+        <<interface>>
+        +問い合わせ対応(I inquiry) String
+        +保守対応(T issue) R
+        +障害対応(I incident) R
+        +リリース作業(List~F~ features) boolean
+        +開発者体験の向上(I input) R
+        +インフラ改善(設計書~Excel~ doc) インフラ成果物
+        +監視(インフラ成果物 infra) String
+    }
+
+    class Me {
+        -String firstName
+        -String familyName
+        -LocalDate joinDate
+        -Integer employeeNo
+        +programming(仕様書~?~ spec) ソースコード
+        +テスト(仕様書~Excel~ spec) 仕様書~Excel~
+        +問い合わせ対応(I inquiry) String
+        +保守対応(T issue) R
+        +障害対応(I incident) R
+        +リリース作業(List~F~ features) boolean
+        +開発者体験の向上(I input) R
+        +インフラ改善(設計書~Excel~ doc) インフラ成果物
+        +監視(インフラ成果物 infra) String
+        +要件定義(R requirements) 要件定義書~Excel~
+        +基本設計(要件定義書~Excel~ definition) 設計書~Excel~
+        +詳細設計(設計書~Excel~ definition) 設計書~Excel~
+        +テーブル設計(仕様書~Excel~ spec) 設計書~Excel~
+        +レビュー(成果物 artifact) String
+    }
+
+    Engineer <|-- Programmer
+    Engineer <|-- TestEngineer
+    Engineer <|-- インフラエンジニア
+
+    Programmer <|-- SE
+    TestEngineer <|-- SE
+
+    Programmer <|-- 保守運用エンジニア
+    TestEngineer <|-- 保守運用エンジニア
+
+    SE <|.. Me
+    保守運用エンジニア <|.. Me
 ```
