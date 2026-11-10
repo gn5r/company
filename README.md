@@ -178,6 +178,14 @@ classDiagram
     }
 
     %% ==================== SIer Engineer Roles ====================
+    class PM {
+        <<interface>>
+    }
+
+    class PL {
+        <<interface>>
+    }
+
     class TestEngineer {
         <<interface>>
         +テスト(仕様書~Excel~ spec) 仕様書~Excel~
@@ -236,6 +244,8 @@ classDiagram
 
     Programmer <|-- SE
     TestEngineer <|-- SE
+    SE <|-- PL
+    PL <|-- PM
 
     Programmer <|-- 保守運用エンジニア
     TestEngineer <|-- 保守運用エンジニア
